@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\V1;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreArticleRequest;
 use App\Http\Requests\StoreMultipleArticlesRequest;
+use App\Http\Requests\UpdateArticleRequest;
 use App\Http\Resources\ArticleResource;
 use App\Models\Article;
 use Illuminate\Http\JSONResponse;
@@ -102,11 +103,11 @@ class ArticleController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param Request $request
-     * @param Article $article
+     * @param UpdateArticleRequest $request
+     * @param int $article_id
      * @return JSONResponse
      */
-    public function update(Request $request, int $article_id): JSONResponse
+    public function update(UpdateArticleRequest $request, int $article_id): JSONResponse
     {
         $article = Article::find($article_id);
 
@@ -116,9 +117,27 @@ class ArticleController extends Controller
             $article->category = $request->input("category");
             $article->price = $request->input("price");
             $article->currency = $request->input("currency");
-            $article->save();
-            return response()->json($article);
+            if (!$this->checkForUpdateConflict($article)) {
+                $article->save();
+                $article = new ArticleResource($article);
+                return response()->json($article);
+            }
+            return response()->json()->setStatusCode(409);
         }
-        return response()->json()->setStatusCode(409);
+        return response()->json()->setStatusCode(404);
+    }
+
+    /**
+     * Check if the loaded record hasn't been updated by another user.
+     *
+     * @param Article $article
+     * @return bool true if conflict exists
+     */
+    public function checkForUpdateConflict(Article $article): bool
+    {
+        if (Article::find($article->article_id)->updated_at == $article->updated_at) {
+            return false;
+        }
+        return true; // conflict found
     }
 }

@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string("description", 2048);
             $table->string("category", 64);
             $table->double("price");
-            $table->char("currency", 3);
+            $table->char("currency", 3)->nullable();
         });
     }
 

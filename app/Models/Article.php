@@ -11,7 +11,5 @@ class Article extends Model
 
     protected $primaryKey = "article_id";
 
-    public $timestamps = false;
-
-    protected $fillable = ["id", "name", "description", "category", "price", "currency"];
+    protected $fillable = ["name", "description", "category", "price", "currency"];
 }

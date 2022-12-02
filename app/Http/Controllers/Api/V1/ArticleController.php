@@ -4,10 +4,12 @@ namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreArticleRequest;
+use App\Http\Requests\StoreMultipleArticlesRequest;
 use App\Http\Resources\ArticleResource;
 use App\Models\Article;
 use Illuminate\Http\JSONResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class ArticleController extends Controller
 {
@@ -68,6 +70,32 @@ class ArticleController extends Controller
             return response()->json($article);
         }
         return response()->json()->setStatusCode(404);
+    }
+
+    /**
+     * Store a number of newly created resources in storage.
+     *
+     * @param StoreMultipleArticlesRequest $request
+     * @return JSONResponse
+     */
+    public function storeConcurrent(StoreMultipleArticlesRequest $request): JSONResponse
+    {
+        $articles = collect();
+        DB::transaction(function () use ($request, $articles) {
+            foreach ($request->all() as $item) {
+                $article = Article::create([
+                    "name" => $item["name"],
+                    "description" => $item["description"],
+                    "category" => $item["category"],
+                    "price" => $item["price"],
+                    "currency" => $item["currency"] ?? null,
+                ]);
+                $articles->push($article);
+            }
+        });
+
+        $articles = ArticleResource::collection($articles);
+        return response()->json($articles);
     }
 
     /**

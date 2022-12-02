@@ -15,3 +15,6 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::apiResource('articles', ArticleController::class)->only(["index", "show", "store", "update"]);
+
+Route::post('articles-concurrent', [ArticleController::class, "storeConcurrent"])
+    ->name("articles.store_concurrent");

@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use Database\Factories\ArticleFactory;
 use Illuminate\Database\Seeder;
 use App\Models\Article;
 
@@ -33,5 +34,9 @@ class ArticleSeeder extends Seeder
                 "currency" => $item["currency"],
             ]);
         }
+
+        Article::factory()
+            ->count(10)
+            ->create();
     }
 }

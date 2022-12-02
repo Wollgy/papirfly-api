@@ -67,6 +67,7 @@ class ArticleController extends Controller
         $article = Article::find($article_id);
 
         if ($article) {
+            $article = new ArticleResource($article);
             return response()->json($article);
         }
         return response()->json()->setStatusCode(404);

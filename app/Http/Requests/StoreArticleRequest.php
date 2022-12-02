@@ -31,7 +31,7 @@ class StoreArticleRequest extends FormRequest
             "description" => ["required", "string", "max:2048"],
             "category" => ["required", "string", "max:64"],
             "price" => ["required", "numeric", "min:0", new NotString()],
-            "currency" => ["required_unless:price,0", "string"]
+            "currency" => ["required_unless:price,0", "string", "size:3"]
         ];
     }
 

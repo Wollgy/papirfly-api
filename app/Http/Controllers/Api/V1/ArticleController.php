@@ -22,7 +22,7 @@ class ArticleController extends Controller
      */
     public function index(Request $request): JSONResponse
     {
-        $query = Article::select("name", "description", "category", "price", "currency");
+        $query = Article::select("article_id", "name", "description", "category", "price", "currency");
 
         $name = $request->query("name");
         if (isset($name)) { $query->where("name", "like", "%".$name."%"); }
